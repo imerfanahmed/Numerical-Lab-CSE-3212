@@ -1,27 +1,44 @@
 clc;
-disp('bX = c')
-%4
-n = input('Enter the size of matrix');
-%[2 1 -1 2; 4 5 -3 6; -2 5 -2 6; 4 11 -4 8]
-b = input('Enter the elements of the Matrix b ' );
-%[5;9;4;2]
-c = input('Enter the elements of the Matrix c ' );
-dett = det(b);
-if dett == 0
-    disp('This system unsolvable because det(b) = 0 ')
+disp('bX = c');
+
+% Get the size of the matrix from the user
+n = input('Enter the size of the matrix: ');
+
+% Get the matrix 'b' from the user
+b = input('Enter the elements of the matrix b: ');
+
+% Get the vector 'c' from the user
+c = input('Enter the elements of the matrix c: ');
+
+% Calculate the determinant of matrix 'b'
+det_b = det(b);
+
+% Check if the system is solvable
+if det_b == 0
+    disp('This system is unsolvable because det(b) = 0');
 else
-    a=[b c];
-    for i = 0:n-2
-        for j = 0:n-2-i
-            a(i+j+2:i+j+2,i+1:n+1)=(a(i+j+2:i+j+2,i+1:n+1).*(a(i+1,i+1)/a(i+j+2,i+1)))-a(i+1:i+1,i+1:n+1);
-            disp(a)
+    % Augment matrix 'b' with vector 'c'
+    augmented_matrix = [b c];
+
+    % Forward elimination to convert to upper triangular matrix
+    for i = 1:n-1
+        for j = i+1:n
+            factor = augmented_matrix(j, i ) / augmented_matrix(i, i);
+            augmented_matrix(j, i:n+1) = augmented_matrix(j, i:n+1) - factor * augmented_matrix(i, i:n+1);
+            disp(augmented_matrix); % Display intermediate steps (optional)
             fprintf('\n');
         end
     end
-    X=c';
-    for i = 0:n-1
-        X(n-i)=(a(n-i,n+1)-sum(a(n-i:n-i,1:n).*X)+a(n-i,n-i)*X(n-i))/a(n-i,n-i);
+
+    % Initialize solution vector
+    X = zeros(n, 1);
+
+    % Back substitution to solve for X
+    for i = n:-1:1
+        X(i) = (augmented_matrix(i, end) - sum(augmented_matrix(i, i+1:n) .* X(i+1:n))) / augmented_matrix(i, i);
     end
-    X=X';
-    disp(X)
+
+    % Display the solution vector X
+    disp('The solution vector X is:');
+    disp(X);
 end
